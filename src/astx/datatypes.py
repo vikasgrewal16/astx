@@ -483,9 +483,25 @@ class LiteralBoolean(Literal):
     ) -> None:
         """Initialize LiteralBoolean."""
         super().__init__(loc)
+
+        if not isinstance(value, bool):
+            raise TypeError(
+                f"Expected boolean value, got {type(value)} instead."
+            )
+
         self.value = value
         self.type_ = Boolean
         self.loc = loc
+
+    def __str__(self) -> str:
+        """Return a string representation of the LiteralBoolean."""
+        return f"LiteralBoolean({self.value})"
+
+    def get_struct(self, simplified: bool = False) -> ReprStruct:
+        """Return the AST representation for the object."""
+        key = f"LiteralBoolean[{self.type_}]"
+        value = f"{self.value}"
+        return self._prepare_struct(key, value, simplified)
 
 
 @public
@@ -631,3 +647,73 @@ class LiteralComplex64(LiteralComplex):
         """Initialize LiteralComplex64."""
         super().__init__(Complex64(real, imag), loc)
         self.type_ = Complex64
+
+
+@public
+class BooleanBinaryOp(BinaryOp):
+    """Base class for binary boolean operations like And, Or, Xor."""
+
+    def __init__(
+        self, op_code: str, lhs: LiteralBoolean, rhs: LiteralBoolean
+    ) -> None:
+        """Initialize a binary boolean operation."""
+        valid_ops = ["and", "or", "xor", "==", "!=", ">", "<", ">=", "<="]
+        if op_code not in valid_ops:
+            raise ValueError(f"Invalid boolean operation: {op_code}")
+        super().__init__(op_code, lhs, rhs)
+
+    def __str__(self) -> str:
+        """Return a string that represents the boolean operation."""
+        return f"{self.lhs} {self.op_code} {self.rhs}"
+
+
+@public
+class BooleanUnaryOp(UnaryOp):
+    """Base class for unary boolean operations like Not."""
+
+    def __init__(self, op_code: str, operand: LiteralBoolean) -> None:
+        """Initialize a unary boolean operation."""
+        valid_ops = ["not"]
+        if op_code not in valid_ops:
+            raise ValueError(f"Invalid boolean operation: {op_code}")
+        super().__init__(op_code, operand)
+
+    def __str__(self) -> str:
+        """Return a string that represents the boolean operation."""
+        return f"{self.op_code} {self.operand}"
+
+
+@public
+class And(BooleanBinaryOp):
+    """Represents a boolean 'and' operation."""
+
+    def __init__(self, lhs: LiteralBoolean, rhs: LiteralBoolean) -> None:
+        """Initialize 'and' operation."""
+        super().__init__("and", lhs, rhs)
+
+
+@public
+class Or(BooleanBinaryOp):
+    """Represents a boolean 'or' operation."""
+
+    def __init__(self, lhs: LiteralBoolean, rhs: LiteralBoolean) -> None:
+        """Initialize 'or' operation."""
+        super().__init__("or", lhs, rhs)
+
+
+@public
+class Xor(BooleanBinaryOp):
+    """Represents a boolean 'xor' operation."""
+
+    def __init__(self, lhs: LiteralBoolean, rhs: LiteralBoolean) -> None:
+        """Initialize 'xor' operation."""
+        super().__init__("xor", lhs, rhs)
+
+
+@public
+class Not(BooleanUnaryOp):
+    """Represents a boolean 'not' operation."""
+
+    def __init__(self, operand: LiteralBoolean) -> None:
+        """Initialize 'not' operation."""
+        super().__init__("not", operand)
