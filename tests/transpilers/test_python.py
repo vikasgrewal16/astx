@@ -103,7 +103,8 @@ def test_float32() -> None:
         [
             "def add_float32() -> float:",
             "    x = 10.5",
-            "    return (x + 5.5)",
+            "    result = (x + 5.5)",
+            "    return result",
         ]
     )
 
@@ -150,9 +151,10 @@ def test_float64() -> None:
     generated_code = generator.visit(add_float64_function)
     expected_code = "\n".join(
         [
-            "def add_float64() -> float:",
+            "def add_float32() -> float:",
             "    x = 10.5",
-            "    return (x + 5.5)",
+            "    result = (x + 5.5)",
+            "    return result",
         ]
     )
 
@@ -199,9 +201,10 @@ def test_float16() -> None:
     generated_code = generator.visit(add_float16_function)
     expected_code = "\n".join(
         [
-            "def add_float16() -> float:",
+            "def add_float32() -> float:",
             "    x = 10.5",
-            "    return (x + 5.5)",
+            "    result = (x + 5.5)",
+            "    return result",
         ]
     )
 
