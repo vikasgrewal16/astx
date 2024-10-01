@@ -78,38 +78,37 @@ class ASTxPythonTranspiler:
         return str(node.value)
 
     @dispatch  # type: ignore[no-redef]
-def visit(self, node: astx.Function) -> str:
-    """Handle Function nodes."""
-    # Generate the argument list
-    args = self.visit(node.prototype.args)
-    # Generate the return type if available
-    returns = (
+    def visit(self, node: astx.Function) -> str:
+        """Handle Function nodes."""
+        # Generate the argument list
+        args = self.visit(node.prototype.args)
+        # Generate the return type if available
+        returns = (
         f" -> {self.visit(node.prototype.return_type)}"
         if node.prototype.return_type
         else ""
-    )
-    # Construct the function header
-    header = f"def {node.name}({args}){returns}:"
+        )
+        # Construct the function header
+        header = f"def {node.name}({args}){returns}:"
 
-    # Initialize a list to hold body statements
-    body_statements = []
+        # Initialize a list to hold body statements
+        body_statements = []
     
-    # Visit each statement in the function body
-    for stmt in node.body.statements:
-        body_statements.append(self.visit(stmt))
+        # Visit each statement in the function body
+        for stmt in node.body.statements:
+            body_statements.append(self.visit(stmt))
     
-    # Check if the last statement is a BinaryOp
-    if body_statements and isinstance(node.body.statements[-1], astx.BinaryOp):
-        # If the last statement is a BinaryOp, wrap it in a return
-        last_statement = body_statements[-1]
-        body_statements[-1] = f"return {last_statement}"
+        # Check if the last statement is a BinaryOp
+        if body_statements and isinstance(node.body.statements[-1], astx.BinaryOp):
+            # If the last statement is a BinaryOp, wrap it in a return
+            last_statement = body_statements[-1]
+            body_statements[-1] = f"return {last_statement}"
 
-    # Join all the body statements
-    body = "\n".join(body_statements)
+        # Join all the body statements
+        body = "\n".join(body_statements)
 
-    # Return the complete function definition
-    return f"{header}\n{body}"
-
+        # Return the complete function definition
+        return f"{header}\n{body}"
 
     @dispatch  # type: ignore[no-redef]
     def visit(self, node: astx.FunctionReturn) -> str:
