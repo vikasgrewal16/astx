@@ -91,11 +91,14 @@ class ASTxPythonTranspiler:
         # Generate the function body
         body_lines = self.visit(node.body).split('\n')
         
-        # If the last line is not a return statement, add one
-        if not body_lines[-1].strip().startswith('return'):
-            body_lines[-1] = f"return {body_lines[-1]}"
+        # Ensure proper indentation for all lines
+        indented_body_lines = [f"{self.indent_str}{line}" for line in body_lines]
         
-        body = '\n'.join(body_lines)
+        # If the last line is not a return statement, add one
+        if not indented_body_lines[-1].strip().startswith('return'):
+            indented_body_lines[-1] = f"{self.indent_str}return {indented_body_lines[-1].strip()}"
+        
+        body = '\n'.join(indented_body_lines)
         
         return f"{header}\n{body}"
 
