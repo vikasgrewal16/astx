@@ -84,10 +84,10 @@ class ASTxPythonTranspiler:
         args = self.visit(node.prototype.args)
         # Generate the return type if available
         returns = (
-        f" -> {self.visit(node.prototype.return_type)}"
-        if node.prototype.return_type
-        else ""
-        )
+            f" -> {self.visit(node.prototype.return_type)}"
+            if node.prototype.return_type
+            else ""
+        )   
         # Construct the function header
         header = f"def {node.name}({args}){returns}:"
 
